@@ -13,7 +13,7 @@ Pushbutton button(ZUMO_BUTTON);
 #define NUM_SENSORS 6
 unsigned int sensor_values[NUM_SENSORS];
 ZumoReflectanceSensorArray reflectanceSensors;
-bool borderDetect =false;
+bool borderDetect = false;
 // This is the maximum speed the motors will be allowed to turn.
 // (400 lets the motors go at top speed; decrease to impose a speed limit)
 const int MAX_SPEED = 300;
@@ -32,36 +32,36 @@ const int MAX_SPEED = 300;
 //int room_no;
 char dir;
 char movement;
-int corridor_count =1;
-int turn_count_l =0;
+int corridor_count = 1;
+int turn_count_l = 0;
 int turn_count_r = 0;
-bool found=false;
-bool corridorObject=false;
+bool found = false;
+bool corridorObject = false;
 //int room_count = 1;
 
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
-void setup() 
+void setup()
 {
   // Play a little welcome song
   buzzer.play(">g32>>c32");
-  
+
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.print("waiting...");
   delay(500);
   reflectanceSensors.init();
-  
-    // Turn on LED to indicate we are in calibration mode
+
+  // Turn on LED to indicate we are in calibration mode
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
   button.waitForButton();
-  
+
   // Wait 1 second and then begin automatic sensor calibration
   // by rotating in place to sweep the sensors over the line
   delay(1000);
   int i;
-  for(i = 0; i < 80; i++)
+  for (i = 0; i < 80; i++)
   {
     if ((i > 10 && i <= 30) || (i > 50 && i <= 70))
       motors.setSpeeds(-240, 240);
@@ -73,8 +73,8 @@ void setup()
     // 80*20 = 1600 ms.
     delay(20);
   }
-  motors.setSpeeds(0,0);
-    // Turn off LED to indicate we are through with calibration
+  motors.setSpeeds(0, 0);
+  // Turn off LED to indicate we are through with calibration
   digitalWrite(13, LOW);
   buzzer.play(">g32>>c32");
   button.waitForButton();
@@ -82,7 +82,7 @@ void setup()
   //while(buzzer.isPlaying());
 }
 
-void roomTurn() 
+void roomTurn()
 
 {
 
@@ -92,96 +92,96 @@ void roomTurn()
 
 }
 
-void loop() 
+void loop()
 {
   // put your main code here, to run repeatedly:
   delay(50); // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
-  if (Serial.available()>0) 
+  if (Serial.available() > 0)
   {
-    
-    movement = Serial.read();    
+
+    movement = Serial.read();
     switch (movement)
     {
       case 'w': motors.setSpeeds(150, 150);
-      //borderDetect = true;
-      break;
+        //borderDetect = true;
+        break;
       case 'd': motors.setSpeeds(150, -150);
-      delay(200);
-      motors.setSpeeds(0,0);
-      break;
+        delay(200);
+        motors.setSpeeds(0, 0);
+        break;
       case 's': motors.setSpeeds(-150, -150);
-      break;
+        break;
       case 'a': motors.setSpeeds(-150, 150);
-      delay(200);
-      motors.setSpeeds(0,0);
-      break;
-      case 'o': motors.setSpeeds(0,0);
-      break;
+        delay(200);
+        motors.setSpeeds(0, 0);
+        break;
+      case 'o': motors.setSpeeds(0, 0);
+        break;
       case 'c': motors.setSpeeds(120, 120);
-      break;
-      /*case 'r':
-      Serial.print("Room Mode. \f");
+        break;
+      case 'r':
+        Serial.print("Room Mode. \f");
         //Serial.print("\nTurn robot and wait");
         delay(1000);
         //roomTurn();
         scanRoom();
         //mode = 4;
-        break;*/
-        case '<': 
+        break;
+      case '<':
         //turn_count_l++;
-        motors.setSpeeds(-150,150);
+        motors.setSpeeds(-150, 150);
         delay(400);
-        motors.setSpeeds(0,0);
+        motors.setSpeeds(0, 0);
         scanLeftRoom();
         break;
-        case '>': 
+      case '>':
         //digitalWrite(13, HIGH);
         //turn_count_r++;
-        motors.setSpeeds(150,-150);
+        motors.setSpeeds(150, -150);
         delay(400);
-        motors.setSpeeds(0,0);
+        motors.setSpeeds(0, 0);
         scanRightRoom();
         break;
-        case 'z': 
+      case 'z':
         corridor_count++;
-        Serial.println("This is corridor "+ (String)corridor_count + " on the left hand side of the zumo \f");
+        Serial.println("This is corridor " + (String)corridor_count + " on the left hand side of the zumo \f");
         // if rightmost sensor detects line, reverse and turn to the left
-        motors.setSpeeds(-200,200);
+        motors.setSpeeds(-200, 200);
         delay(400);
-        motors.setSpeeds(0,0);
-    /*motors.setSpeeds(-REVERSE_SPEED, -REVERSE_SPEED);
-    delay(REVERSE_DURATION);
-    motors.setSpeeds(-TURN_SPEED, TURN_SPEED);
-    delay(TURN_DURATION);
-    motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);*/
-        break;
-        case 'x': 
-        corridor_count++;
-        Serial.println("This is corridor "+ (String)corridor_count + " on the right hand side of the zumo \f");
-        motors.setSpeeds(200,-200);
-        delay(400);
-        motors.setSpeeds(0,0);
+        motors.setSpeeds(0, 0);
         /*motors.setSpeeds(-REVERSE_SPEED, -REVERSE_SPEED);
-    delay(REVERSE_DURATION);
-    motors.setSpeeds(TURN_SPEED, -TURN_SPEED);
-    delay(TURN_DURATION);
-    motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);*/
+          delay(REVERSE_DURATION);
+          motors.setSpeeds(-TURN_SPEED, TURN_SPEED);
+          delay(TURN_DURATION);
+          motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);*/
         break;
-      
+      case 'x':
+        corridor_count++;
+        Serial.println("This is corridor " + (String)corridor_count + " on the right hand side of the zumo \f");
+        motors.setSpeeds(200, -200);
+        delay(400);
+        motors.setSpeeds(0, 0);
+        /*motors.setSpeeds(-REVERSE_SPEED, -REVERSE_SPEED);
+          delay(REVERSE_DURATION);
+          motors.setSpeeds(TURN_SPEED, -TURN_SPEED);
+          delay(TURN_DURATION);
+          motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);*/
+        break;
+
     } // end switch
   } // end if something read on Serial...
   reflectanceSensors.read(sensor_values);
-   
-  if(sensor_values[2] >= reflectanceSensors.calibratedMaximumOn[2] && sensor_values[3] >= reflectanceSensors.calibratedMaximumOn[3])
+
+  if (sensor_values[2] >= reflectanceSensors.calibratedMaximumOn[2] && sensor_values[3] >= reflectanceSensors.calibratedMaximumOn[3])
   {
     Serial.println("A Wall Has Been Detected \f");
     motors.setSpeeds(-130, -130);
-    delay(150);  
-     motors.setSpeeds(0, 0);  
+    delay(150);
+    motors.setSpeeds(0, 0);
   }
- 
-  else if((sensor_values[0]) && (sensor_values[1]) >= reflectanceSensors.calibratedMaximumOn[1])
-  {Serial.print("Left border Been Detected!  \f");
+
+  else if ((sensor_values[0]) && (sensor_values[1]) >= reflectanceSensors.calibratedMaximumOn[1])
+  { Serial.print("Left border Been Detected!  \f");
     // if leftmost sensor detects line, reverse and turn to the right
     motors.setSpeeds(-REVERSE_SPEED, -REVERSE_SPEED);
     delay(REVERSE_DURATION);
@@ -189,8 +189,8 @@ void loop()
     delay(TURN_DURATION);
     motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
   }
-  else if((sensor_values[4]) && (sensor_values[5]) >= reflectanceSensors.calibratedMaximumOn[4])
-  {Serial.print("Right border Been Detected!  \f");
+  else if ((sensor_values[4]) && (sensor_values[5]) >= reflectanceSensors.calibratedMaximumOn[4])
+  { Serial.print("Right border Been Detected!  \f");
     // if rightmost sensor detects line, reverse and turn to the left
     motors.setSpeeds(-REVERSE_SPEED, -REVERSE_SPEED);
     delay(REVERSE_DURATION);
@@ -198,215 +198,204 @@ void loop()
     delay(TURN_DURATION);
     motors.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
   }
-  if(corridorObject== false)
+  //  if(corridorObject == true)
+  //  {
+  if (sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
   {
-    if(sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+    delay(500);
     buzzer.play(">g32>>c32");
-      found = true;
-      if(found == true)
-      {
-        Serial.print("The object is found in corridor " + (String)corridor_count + " \f");
-      }
-      corridorObject=true;
-    delay(50);
+    found = true;
+    //      if(found == true)
+    //      {
+    Serial.print("The object is found in corridor " + (String)corridor_count + " \f");
+  }
+  //      }
+  //      corridorObject=true;
+  //    delay(50);
+  //}
+  //else
+  //{
+  //  Serial.print("No object found in corridor " + (String)corridor_count + " \f");
+  //  corridorObject=false;
+  //}
 }
-else
-{
-  Serial.print("No object found in corridor " + (String)corridor_count + " \f");
-  corridorObject=true;
-}
-}
-/*void scanRoom() {
+void scanRoom() {
 
   //Serial.print("\nRoom " + (String)turn_count_r + "\f");
   Serial.print("\nRoom scanning started. \f");
   bool found = false;
-  
-  if (movement = '>')
-  {
-    turn_count_r++;
-    //digitalWrite(13, HIGH);
-    Serial.print("This is room number " + (String)turn_count_r + " on the right hand side of the corridor \f");
-  }
-  else if (movement = '<')
-  {
-    turn_count_l++;
-    digitalWrite(13, HIGH);
-    Serial.print("This is room number " + (String)turn_count_l+ " on the left hand side of the corridor \f");
-  }
-  else{
-    
-    Serial.print("Complete");
-  }
 
   //Automatically start the motors to go forward.
   motors.setSpeeds(100, 100);
   delay(600);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(1000);
   //Start the Zumo turning right.
   motors.setSpeeds(100, -100);
   delay(800);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(200);
   //Start the Zumo turning left and starts scanning.
-  motors.setSpeeds(-100, 100); 
+  motors.setSpeeds(-100, 100);
   //delay(1750);
-  for(int i=0; i<35; i++) {
-    if(sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+  for (int i = 0; i < 35; i++) {
+    if (sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
       buzzer.play(">g32>>c32");
     //If an item has been found in the CM radius bool is set to true.
-      found = true;
+    found = true;
     delay(50);
-  }  
-  motors.setSpeeds(0,0);
+  }
+  motors.setSpeeds(0, 0);
   delay(200);
   //Start Zumo turning right and scanning initiated.
-  motors.setSpeeds(100, -100); 
+  motors.setSpeeds(100, -100);
   //delay(2000);
-  for(int i=0; i<40; i++) {
-    if(sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+  for (int i = 0; i < 40; i++) {
+    if (sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
       found = true;
     delay(50);
-  }  
+  }
   Serial.print(".");
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(200);
   Serial.print(".");
   motors.setSpeeds(-100, 100); // turn left
   delay(800);
-  motors.setSpeeds(0,0);
-}*/
+  motors.setSpeeds(0, 0);
+}
 
 void scanLeftRoom() {
-  
+
   //Serial.print("\nRoom " + (String)turn_count_r + "\f");
   Serial.print("\nLeft Room scanning started. \f");
   bool found = false;
-  
+
   if (movement = '<')
   {
     turn_count_l++;
     digitalWrite(13, HIGH);
-    Serial.print("This is room number " + (String)turn_count_l+ " on the left hand side of the corridor \f");
+    Serial.print("This is room number " + (String)turn_count_l + " on the left hand side of the corridor \f");
   }
-  else{
-    
+  else {
+
     Serial.print("Complete");
   }
 
   //Automatically start the motors to go forward.
   motors.setSpeeds(100, 100);
   delay(600);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(1000);
   //Start the Zumo turning right.
   motors.setSpeeds(150, -150);
   delay(800);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(200);
   //Start the Zumo turning left and starts scanning.
-  motors.setSpeeds(-150, 150); 
+  motors.setSpeeds(-150, 150);
   //delay(1750);
-  for(int i=0; i<35; i++) {
-    if(sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+  for (int i = 0; i < 35; i++)
+  {
+    if (sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+    {
       buzzer.play(">g32>>c32");
-    //If an item has been found in the CM radius bool is set to true.
-      found = true;
-      if(found == true)
-      {
-        Serial.print("The object is found in corridor " + (String)corridor_count + " in room " +(String)turn_count_l +"  \f");
-      }
+      //If an item has been found in the CM radius bool is set to true.
+
+      Serial.print("The object is found in corridor " + (String)corridor_count + " in room " + (String)turn_count_l + "  \f");
+      break;
+    }
     delay(50);
-  }  
-  motors.setSpeeds(0,0);
+  }
+  motors.setSpeeds(0, 0);
   delay(200);
   //Start Zumo turning right and scanning initiated.
-  motors.setSpeeds(150, -150); 
+  motors.setSpeeds(150, -150);
   //delay(2000);
-  for(int i=0; i<40; i++) {
-    if(sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
-    buzzer.play(">g32>>c32");
-      found = true;
-      if(found == true)
-      {
-        Serial.print("The object is found in corridor " + (String)corridor_count + " in room " +(String)turn_count_l +"  \f");
-      }
+  for (int i = 0; i < 40; i++) {
+    if (sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+    {
+      buzzer.play(">g32>>c32");
+
+      Serial.print("The object is found in corridor " + (String)corridor_count + " in room " + (String)turn_count_l + "  \f");
+      break;
+    }
     delay(50);
-  }  
+  }
   Serial.print(".");
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(200);
   Serial.print(".");
   motors.setSpeeds(-150, 150); // turn left
   delay(800);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
 }
 
 
-void scanRightRoom() {
-  
+void scanRightRoom()
+{
+
   //Serial.print("\nRoom " + (String)turn_count_r + "\f");
   Serial.print("\nRoom scanning started. \f");
   bool found = false;
-  
+
   if (movement = '>')
   {
     turn_count_r++;
     //digitalWrite(13, HIGH);
     Serial.print("This is room number " + (String)turn_count_r + " on the right hand side of the corridor \f");
   }
-  else{
-    
+  else {
+
     Serial.print("Complete");
   }
 
   //Automatically start the motors to go forward.
   motors.setSpeeds(150, 150);
   delay(600);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(1000);
   //Start the Zumo turning right.
   motors.setSpeeds(150, -150);
   delay(800);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(200);
   //Start the Zumo turning left and starts scanning.
-  motors.setSpeeds(-150, 150); 
+  motors.setSpeeds(-150, 150);
   //delay(1750);
-  for(int i=0; i<35; i++) {
-    if(sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+  for (int i = 0; i < 35; i++) {
+    if (sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+    {
       buzzer.play(">g32>>c32");
-    //If an item has been found in the CM radius bool is set to true.
-      found = true;
-      if(found == true)
-      {
-        Serial.print("The object is found in corridor " + (String)corridor_count + " in room " +(String)turn_count_r +"  \f");
-      }
+      //If an item has been found in the CM radius bool is set to true.
+
+      Serial.print("The object is found in corridor " + (String)corridor_count + " in room " + (String)turn_count_r + "  \f");
+      break;
+    }
     delay(50);
-  }  
-  motors.setSpeeds(0,0);
+  }
+  motors.setSpeeds(0, 0);
   delay(200);
   //Start Zumo turning right and scanning initiated.
-  motors.setSpeeds(150, -150); 
+  motors.setSpeeds(150, -150);
   //delay(2000);
-  for(int i=0; i<40; i++) {
-    if(sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
-    buzzer.play(">g32>>c32");
-      found = true;
-      if(found == true)
-      {
-        Serial.print("The object is found in corridor " + (String)corridor_count + " in room " +(String)turn_count_r +"  \f");
-      }
+  for (int i = 0; i < 40; i++) {
+    if (sonar.ping_cm() <= 20 && sonar.ping_cm() > 0)
+    {
+      buzzer.play(">g32>>c32");
+
+
+      Serial.print("The object is found in corridor " + (String)corridor_count + " in room " + (String)turn_count_r + "  \f");
+      break;
+    }
     delay(50);
-  }  
+  }
   Serial.print(".");
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
   delay(200);
   Serial.print(".");
   motors.setSpeeds(-150, 150); // turn left
   delay(800);
-  motors.setSpeeds(0,0);
+  motors.setSpeeds(0, 0);
 }
 
 
